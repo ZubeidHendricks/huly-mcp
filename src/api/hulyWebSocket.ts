@@ -41,7 +41,7 @@ export class HulyWebSocketClient implements HulyWebSocketConnection {
         }
       });
 
-      this.socket.on('error', (error) => {
+      this.socket.on('error', (error: Error) => {
         console.error('WebSocket error:', error);
         reject(error);
       });

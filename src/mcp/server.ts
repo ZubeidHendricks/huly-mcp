@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { json } from 'express';
 import { McpRequest, McpRequestSchema } from '../types';
 import { handleMcpRequest } from './handlers';
@@ -22,13 +22,13 @@ export class McpServer {
     this.app.use(json());
     
     // Basic request logging
-    this.app.use((req, res, next) => {
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
       console.log(`${req.method} ${req.path}`);
       next();
     });
     
     // CORS middleware
-    this.app.use((req, res, next) => {
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -43,12 +43,12 @@ export class McpServer {
 
   private setupRoutes() {
     // Health check endpoint
-    this.app.get('/health', (req, res) => {
+    this.app.get('/health', (req: Request, res: Response) => {
       res.json({ status: 'ok' });
     });
     
     // MCP endpoint
-    this.app.post('/mcp', async (req, res) => {
+    this.app.post('/mcp', async (req: Request, res: Response) => {
       try {
         // Validate the request
         const parseResult = McpRequestSchema.safeParse(req.body);
@@ -89,7 +89,7 @@ export class McpServer {
     });
     
     // MCP manifest endpoint
-    this.app.get('/manifest', (req, res) => {
+    this.app.get('/manifest', (req: Request, res: Response) => {
       res.json({
         name: 'Huly MCP Server',
         version: '0.1.0',

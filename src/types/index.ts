@@ -69,7 +69,7 @@ export interface McpResponse {
 
 // WebSocket Connection Types
 export interface HulyWebSocketConnection {
-  isConnected: boolean;
+  isConnected: () => boolean;  // Changed from boolean to () => boolean
   connect: () => Promise<void>;
   disconnect: () => void;
   send: (message: any) => Promise<any>;
