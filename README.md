@@ -72,9 +72,6 @@ To use this MCP server with Activepieces:
 2. Configure the MCP URL in Activepieces to point to your deployed server
 3. Use the Huly functions in your AI workflows
 
-## Demo Video
-
-[Link to demo video showing the MCP server in action]
 
 ## Development
 
