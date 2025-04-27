@@ -5,18 +5,29 @@ export class HulyWebSocketClient implements HulyWebSocketConnection {
   private socket: WebSocket | null = null;
   private requestMap = new Map<string, { resolve: Function; reject: Function }>();
   private url: string;
+  private mockMode: boolean;
   
   constructor(url: string) {
     this.url = url;
+    this.mockMode = url.startsWith('mock://');
   }
 
   public isConnected(): boolean {
+    if (this.mockMode) {
+      return true; // Always return true in mock mode
+    }
     return this.socket !== null && this.socket.readyState === WebSocket.OPEN;
   }
 
   public async connect(): Promise<void> {
     if (this.isConnected()) {
       return;
+    }
+
+    // If in mock mode, just simulate a successful connection
+    if (this.mockMode) {
+      console.log('Mock: Connected to Huly WebSocket');
+      return Promise.resolve();
     }
 
     return new Promise((resolve, reject) => {
@@ -54,6 +65,11 @@ export class HulyWebSocketClient implements HulyWebSocketConnection {
   }
 
   public disconnect(): void {
+    if (this.mockMode) {
+      console.log('Mock: Disconnected from Huly WebSocket');
+      return;
+    }
+
     if (this.socket) {
       this.socket.close();
       this.socket = null;
@@ -61,13 +77,23 @@ export class HulyWebSocketClient implements HulyWebSocketConnection {
   }
 
   public async send(message: any): Promise<any> {
+    // In mock mode, we don't actually send anything through WebSocket
+    if (this.mockMode) {
+      console.log('Mock: Sending message:', message);
+      // Just return a simulated successful response
+      return {
+        id: message.id || Date.now().toString(),
+        result: { success: true }
+      };
+    }
+
     if (!this.isConnected()) {
       await this.connect();
     }
 
     return new Promise((resolve, reject) => {
       // Generate a unique ID for this request
-      const id = Date.now().toString();
+      const id = message.id || Date.now().toString();
       const requestWithId = { ...message, id };
       
       // Store the promise handlers

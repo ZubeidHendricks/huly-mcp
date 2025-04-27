@@ -2,10 +2,11 @@ import { McpServer } from './mcp/server';
 
 // Load environment variables
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
-const HULY_WS_URL = process.env.HULY_WS_URL || 'wss://api.huly.io';
+// Use a mock mode for the demo
+const MOCK_MODE = true;
 
-// Create and start the server
-const server = new McpServer(PORT, HULY_WS_URL);
+// Create the server with mock mode
+const server = new McpServer(PORT, MOCK_MODE);
 
 // Handle graceful shutdown
 process.on('SIGINT', () => {
@@ -23,7 +24,7 @@ process.on('SIGTERM', () => {
 // Start the server
 server.start()
   .then(() => {
-    console.log(`Huly MCP Server started successfully. Connected to ${HULY_WS_URL}`);
+    console.log(`Huly MCP Server started successfully in ${MOCK_MODE ? 'MOCK' : 'LIVE'} mode`);
     console.log(`Server is running at http://localhost:${PORT}`);
     console.log(`API Manifest available at http://localhost:${PORT}/manifest`);
   })

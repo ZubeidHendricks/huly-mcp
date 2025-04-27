@@ -8,11 +8,13 @@ export class McpServer {
   private app: express.Application;
   private port: number;
   private hulyWsUrl: string;
+  private mockMode: boolean;
 
-  constructor(port: number = 3000, hulyWsUrl: string = 'wss://api.huly.io') {
+  constructor(port: number = 3000, mockMode: boolean = false) {
     this.app = express();
     this.port = port;
-    this.hulyWsUrl = hulyWsUrl;
+    this.mockMode = mockMode;
+    this.hulyWsUrl = mockMode ? 'mock://huly.local' : 'wss://api.huly.io';
     this.setupMiddleware();
     this.setupRoutes();
   }
@@ -44,7 +46,7 @@ export class McpServer {
   private setupRoutes() {
     // Health check endpoint
     this.app.get('/health', (req: Request, res: Response) => {
-      res.json({ status: 'ok' });
+      res.json({ status: 'ok', mode: this.mockMode ? 'mock' : 'live' });
     });
     
     // MCP endpoint
@@ -66,11 +68,13 @@ export class McpServer {
         }
         
         const mcpRequest: McpRequest = parseResult.data;
+        console.log(`Received request: ${mcpRequest.method} with params:`, mcpRequest.params);
         
         // Handle the request
         const response = await handleMcpRequest(mcpRequest);
         
         // Send the response
+        console.log(`Response sent for request ID: ${mcpRequest.id}`);
         res.json(response);
       } catch (error: any) {
         console.error('Error processing MCP request:', error);
@@ -276,9 +280,14 @@ export class McpServer {
 
   public async start(): Promise<void> {
     try {
-      // Initialize connection to Huly
-      const hulyClient = getHulyClient(this.hulyWsUrl);
-      await hulyClient.connect();
+      // In mock mode, skip actual connection
+      if (!this.mockMode) {
+        // Initialize connection to Huly
+        const hulyClient = getHulyClient(this.hulyWsUrl);
+        await hulyClient.connect();
+      } else {
+        console.log('Running in MOCK mode - skipping WebSocket connection');
+      }
       
       // Start the server
       return new Promise((resolve) => {
@@ -294,9 +303,12 @@ export class McpServer {
   }
 
   public stop(): void {
-    // Disconnect from Huly
-    const hulyClient = getHulyClient();
-    hulyClient.disconnect();
+    // Only disconnect if not in mock mode
+    if (!this.mockMode) {
+      // Disconnect from Huly
+      const hulyClient = getHulyClient();
+      hulyClient.disconnect();
+    }
     
     console.log('Huly MCP Server stopped');
   }
