@@ -1,0 +1,33 @@
+{
+  "name": "@activepieces/piece-huly",
+  "version": "0.1.0",
+  "description": "Activepieces integration for Huly project management platform through MCP",
+  "author": "Zubeid Hendricks",
+  "license": "MIT",
+  "keywords": [
+    "activepieces",
+    "huly",
+    "project-management",
+    "mcp",
+    "model-context-protocol"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@activepieces/pieces-common": "^0.5.0",
+    "@activepieces/pieces-framework": "^0.5.0",
+    "dayjs": "^1.11.7"
+  },
+  "peerDependencies": {
+    "@activepieces/pieces-common": "^0.5.0",
+    "@activepieces/pieces-framework": "^0.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "@types/jest": "^29.5.0"
+  }
+}
